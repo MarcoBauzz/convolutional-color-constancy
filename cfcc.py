@@ -29,7 +29,7 @@ import warnings
 parser = argparse.ArgumentParser(description='PyTorch Convolutional Edge Based Color Constancy')
 parser.add_argument('--dir-train', type=str, default='/data/Datasets/ColorConstancy/ColorChecker/Hemrit/masked_long800/', metavar='D',
                     help='training directory')
-parser.add_argument('--dir-exp', type=str, default='../../Experiments/', metavar='D',
+parser.add_argument('--dir-exp', type=str, default='./Experiments/', metavar='D',
                     help='saving directory')
 parser.add_argument('--name-exp', type=str, default='expTMP', metavar='N',
                     help='experiment name (e.g. exp001)')
@@ -100,6 +100,8 @@ parser.add_argument('--valid-sets', type=int, nargs='+', default=[2,3], metavar=
                     help='identifiers for the ColorChecker training set. default [2,3]')
 parser.add_argument('--test-sets', type=int, nargs='+', default=[1], metavar='SS',
                     help='identifiers for the ColorChecker training set. default [2,3]')
+parser.add_argument('--loss', type=str, default='L1', metavar='T',
+                    help='loss function used to guide gradient backpropagation (''Angular'', ''L1'', ''L2'')')
 
 args = parser.parse_args()
 
@@ -448,7 +450,15 @@ if isinstance(args.starting_epoch, str) or args.starting_epoch > 0:
     ceb.load_state_dict(torch.load(os.path.join(args.dir_exp,args.name_exp,'ceb_{}.pth'.format(args.starting_epoch))))
 ceb.to(device)
 
-criterion = RecoveryLoss(angle_type='degrees', reduction='mean')
+# Loss function
+if args.loss.lower() == 'angular':
+    criterion = RecoveryLoss(angle_type='degrees', reduction='mean')
+if args.loss.lower() == 'l1':
+    criterion = nn.L1Loss(reduction='mean')
+if args.loss.lower() == 'l2':
+    criterion = nn.MSELoss(reduction='mean')
+
+# Optimizer
 optimizer = optim.Adam(ceb.parameters(), lr=args.lr, weight_decay=args.wdecay)
 
 if args.data_augmentation:
@@ -473,8 +483,8 @@ if args.validation_transform == 'none':
 elif args.validation_transform == 'isotropic':
     # TODO: generalize for other datasets:
     warnings.warn('Isotropic rescaling works only for Color Checker dataset', stacklevel=2)
-    # min_size = np.round(args.image_size * 533.0/800.0).astype(int).item()
-    min_size = args.image_size
+    min_size = np.round(args.image_size * 533.0/800.0).astype(int).item()
+    # min_size = args.image_size
 
     transforms_valid = torchvision.transforms.Compose([
         torchvision.transforms.Resize(min_size),
