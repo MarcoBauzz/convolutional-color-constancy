@@ -111,8 +111,8 @@ class ConvolutionalEB(nn.Module):
         super(ConvolutionalEB, self).__init__()
 
         # Traditional parameters from Low-Level Color Constancy
-        #  njet: derivative filter order
-        #  sigma: gaussian standard deviation
+        #  njet: derivative filter order (n)
+        #  sigma: gaussian standard deviation (s)
         #  mink_norm: minkoski norm (p)
 
         # Additional parameters
@@ -534,6 +534,7 @@ def train(epoch):
 
         img = img.to(device)
         target = target.to(device)
+        target = F.normalize(target, p=2, dim=1)
         optimizer.zero_grad()
 
         output = ceb(img)
@@ -575,6 +576,7 @@ def valid(epoch):
         for batch_idx, (img, target) in enumerate(valid_loader):
             img = img.to(device)
             target = target.to(device)
+            target = F.normalize(target, p=2, dim=1)
 
             output = ceb(img)
             output = torch.squeeze(torch.squeeze(output,2),2)
@@ -608,6 +610,7 @@ def test(save_output=False):
         for batch_idx, (img, target) in enumerate(test_loader):
             img = img.to(device)
             target = target.to(device)
+            target = F.normalize(target, p=2, dim=1)
 
             output = ceb(img)
             output = torch.squeeze(torch.squeeze(output,2),2)
