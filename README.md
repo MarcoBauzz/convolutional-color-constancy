@@ -16,6 +16,10 @@ IEEE Transactions on Neural Networks and Learning Systems (2024).
 }
 ```
 
+## Preparing the dataset
+Experiments are performed on the ColorChecker dataset [Gehler et al. 2008] using the original threefold cross-validation split, but the “recommended” images and ground truth data by Hemrit et al. [2020].\
+More details on data preparation found in the `./Data/` folder of this repository
+
 ## Training
 See `launcher_train.sh` for example trainings on multiple test folds.
 
