@@ -17,7 +17,7 @@ IEEE Transactions on Neural Networks and Learning Systems (2024).
 ```
 
 ## Training
-See `launcher_train.sh` for example trainings on multiple folds, with multiple runs.
+See `launcher_train.sh` for example trainings on multiple test folds.
 
 ### LCF-A
 `python cfcc.py --name-exp=exp_LCFA --image-size=200 --intermediate-blocks=0 --pool-size=1 --W-last=1 --W=3 --sigma=-1 --test-sets=1 --save-output --njet=1 --inner-size=9 --mink-norm=1.000001 --epochs=1000 --njet-protection1=prelu --nl=prelu --njet-protection2=posrelu --mink-protection-pow=oneabs --validation-transform=isotropic --data-augmentation`
